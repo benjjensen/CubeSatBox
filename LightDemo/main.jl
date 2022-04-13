@@ -221,9 +221,5 @@ end
 
 println("Starting")
 console_interface()   # Run it all
-# sun, sat = demo_with_orbit(0);
-
-# Run with albedo, save, and then just plot?
-
 
 
