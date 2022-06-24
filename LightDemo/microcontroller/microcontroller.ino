@@ -10,7 +10,7 @@
 
 #define NUM_LEDS 6 
 #define INITIAL_FLASH_COUNT 3
-#define FLASH_DURATION 200 // Milliseconds
+#define FLASH_DURATION 1000 // Milliseconds
 
 // Arrays for holding received data 
 const byte maxChars = 32;
@@ -35,6 +35,7 @@ void flash_lights(int dur) {
     for (uint8_t i = 0; i < NUM_LEDS; i++) 
         digitalWrite(LEDpins[i], HIGH);
 
+//    while (true)
     delay(dur);
 
     for (uint8_t i = 0; i < NUM_LEDS; i++) 
@@ -45,13 +46,13 @@ void lightLEDs() {
     // Updates the appropriate LEDs by the right values (e.g., only +/- X, not both)
 
     int led_xp = (sx > 0) ? round(sx * 255) : 0;  // Map from [0, 1] -> [0, 255]
-    int led_xn = (sx < 0) ? round(sx * 255) : 0;  
+    int led_xn = (sx < 0) ? round(-sx * 255) : 0;  
 
     int led_yp = (sy > 0) ? round(sy * 255) : 0;  // Map from [0, 1] -> [0, 255]
-    int led_yn = (sy < 0) ? round(sy * 255) : 0;  
+    int led_yn = (sy < 0) ? round(-sy * 255) : 0;  
 
     int led_zp = (sz > 0) ? round(sz * 255) : 0;  // Map from [0, 1] -> [0, 255]
-    int led_zn = (sz < 0) ? round(sz * 255) : 0;  
+    int led_zn = (sz < 0) ? round(-sz * 255) : 0;  
 
     // Use PWM to adjust brightness 
     analogWrite(LEDpins[0], led_xp);

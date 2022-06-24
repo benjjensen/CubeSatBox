@@ -1,4 +1,4 @@
-# [ArduinoComm/LightDemo/interactive_demo.jl]
+# [CubeSatBox/LightDemo/interactive_demo.jl]
 
 """
       Interactive demo of cubeSat test box's LED feature.
@@ -7,9 +7,6 @@
 
     (Works with microcontroller/microcontroller.ino)
 
-
-    TODO: 
-    - Figure out how to get the quit function to work, or add in an exit button 
 """
 
 using LibSerialPort         # Allows for serial communication with Arduino 
