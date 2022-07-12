@@ -9,17 +9,18 @@
     Has a lot of functions because I played around with a lot of things.
 """
 
-# using StaticArrays, SatelliteDynamics, EarthAlbedo 
-using LinearAlgebra, Plots, JLD2 
-# using LibSerialPort, ForwardDiff
+using StaticArrays, SatelliteDynamics, EarthAlbedo 
+using LinearAlgebra, Plots, JLD2, Distributions
+using LibSerialPort, ForwardDiff
+using Infiltrator
 
 
-path = "../SensorCalibration/src/MissionSim/"
+path = "../../SensorCalibration/src/"
 include(path * "quaternions.jl")
 
 include(path * "CustomStructs.jl");         using .CustomStructs  # Needed to load without warnings
 
-
+n(α, ϵ) = [cos(ϵ) * cos(α); cos(ϵ) * sin(α); sin(ϵ)]
 
 
 """ Computes the angular distance between two vectors, in degrees """
@@ -40,6 +41,7 @@ end
       Calculates surface normals and solves for the sun vector using a pseudo-inverse. 
     Allows for non-parallel surface normals, and works the best. 
 """
+
 function estimate_sun_vector(Ĩ, azi, elev)
     
     ns = zeros(eltype(Ĩ),  6, 3) 
@@ -310,7 +312,7 @@ function estimation_error(Ĩs, sᴮs, Cs, αs, ϵs; f = estimate_sun_vector)
     return ŝ, err
 end
 
-function compare_estimation(Ĩs, sᴮs; show_plots = false, Cs_uncal = ones(6), αs_uncal = [0.0, pi, pi/2, -pi/2, 0, pi], ϵs_uncal = [-pi/4, pi/4, 0.0,   0.0,  pi/4, -pi/4])
+function compare_estimation(Ĩs, sᴮs; show_plots = false, Cs_uncal = ones(6), αs_uncal = [0.0, pi, pi/2, -pi/2, 0, pi], ϵs_uncal = [0.0, 0.0,  0.0,   0.0, pi/2, -pi/2])
 
     Cs_cal, αs_cal, ϵs_cal = calibrate_with_lls(Ĩs, sᴮs)
     # Cs_cal, αs_cal, ϵs_cal = calibrate_with_gn(Ĩs, sᴮs)
@@ -327,9 +329,9 @@ function compare_estimation(Ĩs, sᴮs; show_plots = false, Cs_uncal = ones(6),
         plot!(ŝ_uncal, label = "Uncal", c = [:red :blue :green], ls = :dot);
         display( plot!(ŝ_cal, label = "Cal", c = [:red :blue :green], ls = :dash));
 
-        h1 = histogram(err_uncal, label = "Uncalibrated", bins = 0:40)
-        h2 = histogram(err_cal, label = "Calibrated", bins = 0:40)
-        display(plot(h1, h2, layout = (1, 2)))
+        h1 = histogram(err_uncal, title = "Uncalibrated", label = "μ = $μ_uncal", bins = 0:30, xlabel = "Error (deg)", ylabel = "Frequency", normalize = true)
+        h2 = histogram(err_cal, title = "Calibrated", label = "μ = $μ_cal", bins = 0:30, xlabel = "Error (deg)", ylabel = "Frequency", normalize = true)
+        display(plot(h1, h2, layout = (2, 1)))
     end
 
     return changes, err_uncal, err_cal, μ_uncal, μ_cal
@@ -343,11 +345,10 @@ idxs = [norm(Ĩs[i, :]) != 0 for i = 1:size(Ĩs, 1)];    # Trim out all the ze
 Ĩs   = Ĩs[idxs, :];  
 sᴮs  = sᴮs[idxs, :];
 
-c, eu, ec, μu, μc = compare_estimation(Ĩs, sᴮs)
+c, eu, ec, μu, μc = compare_estimation(Ĩs, sᴮs; show_plots = true);
 
 
 # ##### Stitch together states 
-
 
 # # for i = 1:7
 # #     dict = load("data/segment$i.jld2")
