@@ -25,7 +25,7 @@ float sy = 0.0;
 float sz = 0.0;
 
 
-int LEDpins[NUM_LEDS] = {6, 11, 10, 9, 5, 3}; //, 9, 6, 3, 10, 11}; // {3, 9, 5, 10, 6, 11};  // +X, -X, +Y, -Y, +Z, -Z
+int LEDpins[NUM_LEDS] = {6, 11, 10, 9, 5, 3}; // +X, -X, +Y, -Y, +Z, -Z
 
 // HELPER FUNCTIONS
 void flash_lights(int dur) {
